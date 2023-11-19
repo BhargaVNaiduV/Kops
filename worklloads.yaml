@@ -1,0 +1,142 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name : queue
+spec:
+  selector:
+    matchLabels:
+      app: queue
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: queue
+    spec:
+      containers:
+      - name: queue-pod
+        image: richardchesterwood/k8s-fleetman-queue:release2
+--- 
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name : pod-simulater
+spec:
+  selector:
+    matchLabels:
+      app: pod-simulater
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: pod-simulater
+    spec:
+      containers:
+      - name: simulater-pod
+        image: richardchesterwood/k8s-fleetman-position-simulator:release2
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: production-microservice
+
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name : positiontracker
+spec:
+  selector:
+    matchLabels:
+      app: pod-positiontracker
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: pod-positiontracker
+    spec:
+      containers:
+      - name: pod-positiontracker
+        image: richardchesterwood/k8s-fleetman-position-tracker:release3
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: production-microservice
+
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name : api-gateway
+spec:
+  selector:
+    matchLabels:
+      app: pod-apigateway
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: pod-apigateway
+    spec:
+      containers:
+      - name: pod-apigateway
+        image: richardchesterwood/k8s-fleetman-api-gateway:release2
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: production-microservice
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name : web-application-deployment
+spec:
+  selector:
+    matchLabels:
+      app: web-application_lablel
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: web-application_lablel
+    spec:
+      containers:
+      - name: web-application-pod
+        image: richardchesterwood/k8s-fleetman-webapp-angular:release2
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: production-microservice
+
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name : mango-db
+spec:
+  selector:
+    matchLabels:
+      app: mongo-db-label
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mongo-db-label
+    spec:
+      containers:
+      - name: mango-db-pod
+        image: mongo:3.6.5-jessie
+        volumeMounts:
+        - mountPath: /data/db
+          name: localattachedvol
+      volumes:
+      - name: localattachedvol
+        hostPath:
+          path: /wsl.localhost/docker-desktop/home/mongoDb
+          type: DirectoryOrCreate
+       

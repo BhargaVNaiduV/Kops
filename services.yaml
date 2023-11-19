@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fleetman-queue
+spec:
+  selector:
+    app: queue
+  ports:
+    - name: http
+      port: 8161
+      nodePort: 30010
+    - name: internal-service-exposure
+      port: 61616
+  type: NodePort
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: fleetman-position-tracker
+spec:
+  selector:
+    app: pod-positiontracker
+  ports:
+    - name: http
+      port: 8080
+  
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: fleetman-api-gateway
+spec:
+  selector:
+    app: pod-apigateway
+  ports:
+    - name: http
+      port: 8080
+    
+---
+
+apiVersion: v1
+kind: Service
+metadata: 
+  name: fleetman-webapp
+spec:
+  selector: 
+    app: web-application_lablel
+  ports:
+    - name: http
+      port: 80
+      nodePort: 30080
+  type: NodePort
+
+
+
+---
+
+# creating a mangodb database service 
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: fleetman-mongodb
+spec:
+  selector:
+    app: mongo-db-label
+  ports:
+    - name: dbport
+      port: 27017
+  type: ClusterIP
+
+
+  
